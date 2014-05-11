@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:py="http://genshi.edgewall.org/">
+  <body>
+    <div id="header">
+      <h4>${title}</h4>
+    </div>
+     
+    <div id="message">
+        <p>${message}</p>
+    </div>
+    
+    <div py:if="defined('generated_at')" id="footer">
+        <p>Generated at ${generated_at.isoformat()}</p>
+    </div>
+  </body>
+</html>

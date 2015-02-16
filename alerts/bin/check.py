@@ -27,13 +27,16 @@ if __name__ == '__main__':
 
     logging.basicConfig(level=logging.INFO)
 
-    notifier = MailNotifier(
-        name = 'check-status',
-        recipients = aslist(config.get('notify', 'recipients')),
-        mailer = make_mailer(config)
-    )
-
-    #notifier = Notifier('check-status')
+    notifier_name = config.get('notify', 'notifier')
+    notifier = None
+    if notifier_name == 'mailer':
+        notifier = MailNotifier(
+            name = 'check',
+            recipients = aslist(config.get('notify', 'recipients')),
+            mailer = make_mailer(config)
+        )
+    else:
+        notifier = Notifier('check')
 
     hostname = config.get('stats', 'hostname')
     collectd_data_dir = os.path.realpath(config.get('stats', 'collectd_data_dir'))
@@ -84,18 +87,18 @@ if __name__ == '__main__':
     else:
         logging.info('Memory: OK (%.1f < %.1f)' %(u, max_u))
 
-
     # 3. Check filesystem usage
 
     max_u = float(config.get('alerts', 'fs.usage_level'))
     for partition in psutil.disk_partitions():
         mountpoint = partition.mountpoint
+        # Check space
         u = 100.0 * util.get_fs_usage(mountpoint)
         if u > max_u:
             tpl = template_loader.load('fs.excessive-usage.html')
             msg = Message(
                 title = u'Running out of space at %s' %(hostname),
-                summary = u'Used disk space has exceeded %d%%' %(max_u),
+                summary = u'Used disk space has exceeded %d%% at %s' %(max_u, mountpoint),
                 message = tpl.generate(
                     hostname = hostname,
                     mountpoint = mountpoint,
@@ -105,9 +108,28 @@ if __name__ == '__main__':
                 ).render('html')
             )
             notifier.add_message(msg, -5)
-            logging.info('Disk:%s: FAILED (%.1f > %.1f)' %(mountpoint, u, max_u))
+            logging.info('Disk(space):%s: FAILED (%.1f > %.1f)' %(mountpoint, u, max_u))
         else:
-            logging.info('Disk:%s: OK (%.1f < %.1f)' %(mountpoint, u, max_u))
+            logging.info('Disk(space):%s: OK (%.1f < %.1f)' %(mountpoint, u, max_u))
+        # Check inodes
+        u = 100.0 * util.get_fs_usage_of_inodes(mountpoint)
+        if u > max_u:
+            tpl = template_loader.load('fs.excessive-usage-of-inodes.html')
+            msg = Message(
+                title = u'Running out of inodes at %s' %(hostname),
+                summary = u'Used inodes have exceeded %d%% at %s' %(max_u, mountpoint),
+                message = tpl.generate(
+                    hostname = hostname,
+                    mountpoint = mountpoint,
+                    max_usage = '%.1f' %(max_u),
+                    avg_usage = '%.1f' %(u),
+                    generated_at = datetime.now()
+                ).render('html')
+            )
+            notifier.add_message(msg, -5)
+            logging.info('Disk(inodes):%s: FAILED (%.1f > %.1f)' %(mountpoint, u, max_u))
+        else:
+            logging.info('Disk(inodes):%s: OK (%.1f < %.1f)' %(mountpoint, u, max_u))
 
     # 4. Check Nginx workload (active connections)
 

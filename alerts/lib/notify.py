@@ -36,7 +36,7 @@ class Notifier(object):
 
 class MailNotifier(Notifier):
 
-    MAX_NUM_EMAILS = 1
+    MAX_NUM_EMAILS = 2
 
     def __init__(self, name, recipients, mailer):
         assert isinstance(mailer,Mailer), 'Expected a 2nd argument of type %s' %(Mailer)

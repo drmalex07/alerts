@@ -35,14 +35,24 @@ def get_memory_free_kilobytes(start='-600s', resolution='120'):
     return (free_bytes / 1024);
 
 def get_fs_usage(mountpoint, start='-1200s', resolution='600'):
-    info = psutil.disk_usage(mountpoint)
+    info = os.statvfs(mountpoint)
     name = mountpoint.strip('/')
     name = 'root' if (not len(name)) else name.replace('/','-')
     rrd_file = os.path.join(COLLECTD_DATA_DIR, 'df-%s/df_complex-free.rrd' %(name))
     disk_stats = collected_stats.DfStats(rrd_file)
     free_bytes = disk_stats.avg('value', start, resolution)
-    total_bytes = info.total
+    total_bytes = info.f_blocks * info.f_bsize
     return (1 - (free_bytes/total_bytes))
+
+def get_fs_usage_of_inodes(mountpoint, start='-1200s', resolution='600'):
+    info = os.statvfs(mountpoint)
+    name = mountpoint.strip('/')
+    name = 'root' if (not len(name)) else name.replace('/','-')
+    rrd_file = os.path.join(COLLECTD_DATA_DIR, 'df-%s/df_inodes-free.rrd' %(name))
+    disk_stats = collected_stats.DfStats(rrd_file)
+    free_inodes = disk_stats.avg('value', start, resolution)
+    max_inodes = info.f_files
+    return (1 - (free_inodes/max_inodes))
 
 def get_fs_free_kilobytes(mountpoint, start='-1200s', resolution='600'):
     name = mountpoint.strip('/')

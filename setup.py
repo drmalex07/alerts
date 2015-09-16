@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import sys, os
 
-version = '0.1'
+version = '0.2'
 
 setup(name='alerts',
       version=version,
@@ -22,6 +22,7 @@ setup(name='alerts',
           "thrush",
           "psutil",
           "genshi",
+          "zope.interface",
       ],
       entry_points="""
       # -*- Entry points: -*-

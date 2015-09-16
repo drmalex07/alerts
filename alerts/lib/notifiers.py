@@ -1,27 +1,27 @@
 import os
 import sys
 import logging
-import Queue as queue
+import zope.interface
+from Queue import PriorityQueue
 from collections import namedtuple
 
-import lib
-from lib.mailer import Mailer
+from .interfaces import INotifier
+from .mailer import Mailer
 
 Message = namedtuple('Message', ['title', 'summary', 'message'], verbose=False)
 
 class Notifier(object):
+    
+    zope.interface.implements(INotifier)
 
     def __init__(self, name):
         self.name = name
-        self.messages = queue.PriorityQueue()
-        h1 = logging.StreamHandler()
-        h1.setFormatter(logging.Formatter('[%(levelname)-4.4s] [%(name)s] %(message)s'))
-        self.log1 = logging.Logger(self.name)
-        self.log1.addHandler(h1)
+        self.messages = PriorityQueue()
+        self.log1 = logging.getLogger(__name__)
         return
 
     def add_message(self, msg, priority=0):
-        assert isinstance(msg, Message), 'Expected an argument of type %s' %(Message)
+        assert isinstance(msg, Message), 'Expected an argument of type %s' % (Message)
         self.messages.put((priority, msg))
         return
 
@@ -36,10 +36,10 @@ class Notifier(object):
 
 class MailNotifier(Notifier):
 
-    MAX_NUM_EMAILS = 2
+    MAX_NUM_EMAILS = 5
 
     def __init__(self, name, recipients, mailer):
-        assert isinstance(mailer,Mailer), 'Expected a 2nd argument of type %s' %(Mailer)
+        assert isinstance(mailer, Mailer), 'Expected a 2nd argument of type %s' % (Mailer)
         self.recipients = recipients
         self.mailer = mailer
         Notifier.__init__(self, name)
@@ -61,6 +61,7 @@ class MailNotifier(Notifier):
                 self.mailer.send(self.recipients, headers, msg.message)
                 i += 1
         if n > self.MAX_NUM_EMAILS:
-            self.log1.warn('Encountered too many email notifications (silenced %d of them)' %(n - self.MAX_NUM_EMAILS))
+            self.log1.warn(
+                'Encountered too many email notifications (silenced %d of them)' % (n - self.MAX_NUM_EMAILS))
         return
 

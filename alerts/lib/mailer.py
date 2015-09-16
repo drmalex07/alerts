@@ -3,6 +3,7 @@ import logging
 from email.mime.text import MIMEText
 
 class Mailer(object):
+    
     def __init__(self, host, port, username, password='', verbose=0):
         self.smtp = None
         self.host = host
@@ -13,7 +14,8 @@ class Mailer(object):
 
     def connect(self):
         if self.smtp:
-            logging.warn("Allready connected to SMTP endpoint (%s,%d)" %(self.host, self.port))
+            logging.warn(
+                "Allready connected to SMTP endpoint (%s,%d)" %(self.host, self.port))
             return
         self.smtp = smtplib.SMTP_SSL()
         self.smtp.set_debuglevel(self.verbose)
@@ -37,10 +39,10 @@ class Mailer(object):
             self.smtp.quit()
 
 def make_mailer(config):
-    smtp_host = config.get('mailer', 'smtp_host')
-    smtp_port = config.get('mailer', 'smtp_port')
-    smtp_user = config.get('mailer', 'smtp_user')
-    smtp_pass = config.get('mailer', 'smtp_pass')
+    smtp_host = config.get('smtp_host', '127.0.0.1')
+    smtp_port = config.get('smtp_port', '587')
+    smtp_user = config.get('smtp_user')
+    smtp_pass = config.get('smtp_pass')
     mailer = Mailer(host=smtp_host, port=smtp_port, username=smtp_user, password=smtp_pass)
     return mailer
 

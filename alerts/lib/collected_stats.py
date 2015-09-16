@@ -5,7 +5,7 @@ from thrush import rrd
 
 # @Note: 
 # The actual names of the following datasources (as well as their heartbeats) 
-# can be found by running the appropriate rrdtool info commands
+# can be found by running the appropriate `rrdtool info` commands
 
 class Stats(object):
 
@@ -29,34 +29,3 @@ class Stats(object):
                     ds_values.append(v)
             avg = math.fsum(ds_values)/len(ds_values)
         return avg
-
-
-class LoadStats(Stats):
-
-    class RRD(rrd.RRD):
-        midterm = rrd.Gauge(heartbeat=20)
-        shortterm = rrd.Gauge(heartbeat=20)
-        longterm = rrd.Gauge(heartbeat=20)
-
-class CpuStats(Stats):
-
-    class RRD(rrd.RRD):
-        value = rrd.Gauge(heartbeat=20)
-
-class MemoryStats(Stats):
-
-    class RRD(rrd.RRD):
-        value = rrd.Gauge(heartbeat=20)
-
-class DfStats(Stats):
-
-    class RRD(rrd.RRD):
-        value = rrd.Gauge(heartbeat=20)
-
-class NginxStats(Stats):
-
-    class RRD(rrd.RRD):
-        value = rrd.Gauge(heartbeat=20)
-
-
-

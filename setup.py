@@ -20,7 +20,6 @@ setup(name='alerts',
       install_requires=[
           # -*- Extra requirements: -*-
           "thrush",
-          "psutil",
           "genshi",
           "zope.interface",
       ],

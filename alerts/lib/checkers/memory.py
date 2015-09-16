@@ -54,7 +54,7 @@ class Checker(object):
 
         uv = self.get_usage(data_dir)
         u = uv.as_percentage()
-        log1.info(
+        log1.debug(
             'Computed memory usage: %.1f%% (%.1fMiB used, %.1fMiB free, %.1fMiB cached)', 
             u, (uv.used/(1<<20)), (uv.free/(1<<20)), (uv.cached/(1<<20)))
         if u > max_u:

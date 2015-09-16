@@ -57,7 +57,7 @@ class Checker(object):
             # Check space
             uv = self.get_usage_of_space(data_dir, name)
             u = uv.as_percentage()
-            log1.info('Computed usage for filesystem `%s`: %.1f%% of space', name, u)
+            log1.debug('Computed usage for filesystem `%s`: %.1f%% of space', name, u)
             if u > max_u:
                 tpl = template_loader.load('df.excessive-usage.html')
                 msg = Message(
@@ -72,14 +72,14 @@ class Checker(object):
                     ).render('html')
                 )
                 notifier.add_message(msg, 0)
-                log1.info('Check space at `%s`: FAILED (%.1f > %.1f)' %(name, u, max_u))
+                log1.info('Check df space at `%s`: FAILED (%.1f > %.1f)' %(name, u, max_u))
             else:
-                log1.info('Check space at `%s`: OK (%.1f < %.1f)' %(name, u, max_u))
+                log1.info('Check df space at `%s`: OK (%.1f < %.1f)' %(name, u, max_u))
             
             # Check inodes
             uv = self.get_usage_of_inodes(data_dir, name)
             u = uv.as_percentage()
-            log1.info('Computed usage for filesystem `%s`: %.1f%% of inodes', name, u)
+            log1.debug('Computed usage for filesystem `%s`: %.1f%% of inodes', name, u)
             if u > max_u:
                 tpl = template_loader.load('df.excessive-usage-of-inodes.html')
                 msg = Message(
@@ -94,9 +94,9 @@ class Checker(object):
                     ).render('html')
                 )
                 notifier.add_message(msg, 0)
-                log1.info('Check inodes at `%s`: FAILED (%.1f > %.1f)' %(name, u, max_u))
+                log1.info('Check df inodes at `%s`: FAILED (%.1f > %.1f)' %(name, u, max_u))
             else:
-                log1.info('Check inodes at `%s`: OK (%.1f < %.1f)' %(name, u, max_u))
+                log1.info('Check df inodes at `%s`: OK (%.1f < %.1f)' %(name, u, max_u))
 
         return
         

@@ -19,10 +19,13 @@ if __name__ == '__main__':
     
     argp = argparse.ArgumentParser()
     argp.add_argument(
-        'hostnames', metavar='HOSTNAME', type=str, nargs='+')
+        'hosts', metavar='HOSTNAME', type=str, nargs='*')
     argp.add_argument(
         "-c", "--config", dest='config_file', default='config.ini', type=str)
-
+    argp.add_argument(
+        "-a", "--all", dest='check_all', default=False, action='store_true',
+        help='Check all known hosts');
+    
     args = argp.parse_args()
     
     logging.config.fileConfig(args.config_file)
@@ -30,6 +33,8 @@ if __name__ == '__main__':
 
     config_from_file(args.config_file)
    
+    # Setup notifier
+    
     notifier = None
     notifier_name = config['notifier']['notifier']
     if notifier_name == 'mailer':
@@ -43,10 +48,17 @@ if __name__ == '__main__':
    
     # Perform checks
     
+    hosts = args.hosts
+    if not hosts and args.check_all:
+        # List all hosts known to collectd daemon
+        data_dir = config['stats']['collectd_data_dir']
+        hosts = os.listdir(data_dir)
+        log1.info('Found hosts: %s', ', '.join(hosts))
+
     for name in aslist(config['alerts']['check']):
         c = checker_for(name, notifier)
         if c:
-            for h in args.hostnames:
+            for h in hosts:
                 c.check(h)
         else:
             log1.info('Cannot find a `%s` checker', name)

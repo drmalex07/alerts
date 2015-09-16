@@ -48,7 +48,7 @@ class Checker(object):
         n = self._find_number_of_cpus(data_dir)
         for i in range(0, n):
             u = self.get_usage(data_dir, i, 'user')
-            log1.info('Computed usage for CPU #%d: %.2f', i, u)
+            log1.debug('Computed usage for CPU #%d: %.2f', i, u)
             if u > max_u:
                 tpl = template_loader.load('cpu.excessive-usage.html')
                 msg = Message(

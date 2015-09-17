@@ -19,6 +19,7 @@ setup(name='alerts',
       zip_safe=False,
       install_requires=[
           # -*- Extra requirements: -*-
+          "PasteDeploy",
           "thrush",
           "genshi",
           "zope.interface",

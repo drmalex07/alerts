@@ -31,5 +31,5 @@ rrdtool graph t1.png --step 30 --start ${t0} --end ${t} --vertical-label "Test 1
   AREA:x#e7c1c1 \
   LINE1:x#ff0000 
 
-cp -vr t1.png /var/www/images/
+#cp -vr t1.png /var/www/images/
 

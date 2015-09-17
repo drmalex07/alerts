@@ -3,28 +3,19 @@
 
 import sys
 import os
-import genshi
-from genshi.template import TemplateLoader
-from ConfigParser import ConfigParser
 from datetime import datetime
 from paste.deploy.converters import asbool, asint, aslist
 
-sys.path.append(os.path.realpath('.'))
-
-import lib
-from lib.mailer import Mailer, make_mailer
-from lib.notify import Message, MailNotifier
-
-templates_dir1 = os.path.abspath('./templates');
-template_loader = TemplateLoader([templates_dir1])
+from alerts import config_from_file, config, template_loader
+from alerts.lib.mailer import Mailer, make_mailer
+from alerts.lib.notifiers import Message, MailNotifier
 
 if __name__ == '__main__':
-    config = ConfigParser()
-    config.read('config.ini')
+    config_from_file('config.ini')
 
     notifier = MailNotifier('Test-1',
-        recipients = aslist(config.get('notify', 'recipients')),
-        mailer = make_mailer(config)
+        recipients = aslist(config['notifier']['recipients']),
+        mailer = make_mailer(config['mailer'])
     )
 
     tpl = template_loader.load('hello.html')

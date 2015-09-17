@@ -23,5 +23,5 @@ done
 
 rrdtool graph t2.png --step 60 --start ${t0} --end ${t} DEF:x=t2.rrd:value:AVERAGE LINE1:x#FF0000
 
-cp -vr t2.png /var/www/images/
+#cp -vr t2.png /var/www/images/
 

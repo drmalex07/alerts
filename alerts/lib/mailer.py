@@ -50,8 +50,8 @@ def make_mailer(config):
         port = smtp_port,
         username = smtp_user,
         password = smtp_pass,
-        from_addr = from_addr,
-        verbose = True)
+        from_addr = from_addr
+    )
     return mailer
 
 

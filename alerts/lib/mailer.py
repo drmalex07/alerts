@@ -25,13 +25,21 @@ class Mailer(object):
         return
 
     def send(self, to_addr, headers, body):
-        msg = MIMEText(body.encode('utf-8'), 'html', 'utf-8')
+        
+        if isinstance(body, unicode):
+            body = body.encode('utf-8')
+        else:
+            # Assume is encoded as utf8
+            pass
+        
+        msg = MIMEText(body, 'html', 'utf-8')
         for h,v in headers.items():
             msg[h] = v
         if self.smtp is None:
             # Try to connect first
             self.connect()
         from_addr = self.from_addr
+        
         self.smtp.sendmail(from_addr, to_addr, msg.as_string())
         return
 

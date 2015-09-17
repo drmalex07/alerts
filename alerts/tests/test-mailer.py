@@ -2,6 +2,7 @@
 # -*- encoding: utf-8 -*-
 
 from datetime import datetime
+from paste.deploy.converters import asbool, asint, aslist
 
 from alerts import config, template_loader, config_from_file
 from alerts.lib.mailer import Mailer, make_mailer
@@ -17,11 +18,12 @@ if __name__ == '__main__':
     t1 = template_loader.load('hello.html')
     values = {
         'title': u'Hello World',
-        'message': u'Ακομη μια δοκιμαστικη παπαριά!',
+        'message': u'Καλημέρα Κόσμε!! Τρα λαλα λαλα λαλα!',
         'generated_at': datetime.now(),
     }
     msg = t1.generate(**values).render('html')
-
-    m.send('drmalex07@gmail.com', headers, msg)
+    
+    recipients = aslist(config['notifier']['recipients']),
+    m.send(recipients[0], headers, msg)
 
 

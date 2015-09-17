@@ -4,12 +4,13 @@ from email.mime.text import MIMEText
 
 class Mailer(object):
     
-    def __init__(self, host, port, username, password='', verbose=0):
+    def __init__(self, host, port, username, password='', from_addr='', verbose=False):
         self.smtp = None
         self.host = host
         self.port = int(port)
         self.username = username
         self.password = password
+        self.from_addr = from_addr or username
         self.verbose = verbose
 
     def connect(self):
@@ -30,7 +31,7 @@ class Mailer(object):
         if self.smtp is None:
             # Try to connect first
             self.connect()
-        from_addr = self.username
+        from_addr = self.from_addr
         self.smtp.sendmail(from_addr, to_addr, msg.as_string())
         return
 
@@ -40,10 +41,17 @@ class Mailer(object):
 
 def make_mailer(config):
     smtp_host = config.get('smtp_host', '127.0.0.1')
-    smtp_port = config.get('smtp_port', '587')
+    smtp_port = config.get('smtp_port', '465') # SMTP over SSL
     smtp_user = config.get('smtp_user')
     smtp_pass = config.get('smtp_pass')
-    mailer = Mailer(host=smtp_host, port=smtp_port, username=smtp_user, password=smtp_pass)
+    from_addr = config.get('from')
+    mailer = Mailer(
+        host = smtp_host,
+        port = smtp_port,
+        username = smtp_user,
+        password = smtp_pass,
+        from_addr = from_addr,
+        verbose = True)
     return mailer
 
 

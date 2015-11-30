@@ -27,5 +27,8 @@ class Stats(object):
                 v = values[ds]
                 if v == v:
                     ds_values.append(v)
-            avg = math.fsum(ds_values)/len(ds_values)
+            if ds_values:
+                avg = math.fsum(ds_values)/len(ds_values)
+            else:
+                avg = .0
         return avg

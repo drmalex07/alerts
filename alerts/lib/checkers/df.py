@@ -20,7 +20,10 @@ class Stats(BaseStats):
 class Usage(namedtuple('Usage', ('used', 'reserved', 'free'))):
     
     def as_percentage(self):
-        return 100.0 * (self.used + self.reserved)/(self.used + self.reserved + self.free)    
+        if self.used > 0:
+            return 100.0 * (self.used + self.reserved)/(self.used + self.reserved + self.free)
+        else:
+            return .0
  
 @named_checker('df')
 class Checker(object):

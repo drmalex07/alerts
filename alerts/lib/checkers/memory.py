@@ -20,7 +20,10 @@ class Stats(BaseStats):
 class Usage(namedtuple('Usage', ('used', 'buffered', 'cached', 'free'))):
     
     def as_percentage(self):
-        return 100.0 * (self.used)/(self.used + self.free + self.buffered + self.cached)    
+        if self.used > 0:
+            return 100.0 * (self.used)/(self.used + self.free + self.buffered + self.cached)
+        else:
+            return .0
     
 @named_checker('memory')
 class Checker(object):

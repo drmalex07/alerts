@@ -25,7 +25,7 @@ class Stats(object):
             ds_values = []
             for t, values in res:
                 v = values[ds]
-                if v == v:
+                if not (v is None) and (v == v):
                     ds_values.append(v)
             if ds_values:
                 avg = math.fsum(ds_values)/len(ds_values)

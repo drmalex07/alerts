@@ -1,14 +1,13 @@
 import os
 import re
 import datetime
-import logging
 import zope.interface
 from thrush import rrd
 
 from alerts import template_loader
-from alerts.lib.notifiers import Message
+from alerts.lib import Message
 from alerts.lib.collected_stats import Stats as BaseStats
-from alerts.lib.checkers import IChecker, INotifier, named_checker
+from alerts.lib.checkers import BaseChecker, named_checker
 
 class Stats(BaseStats):
 
@@ -18,30 +17,27 @@ class Stats(BaseStats):
         longterm = rrd.Gauge(heartbeat=20)
 
 @named_checker('load')
-class Checker(object):
-    
-    zope.interface.implements(IChecker)
+class Checker(BaseChecker):
 
-    def __init__(self, notifier):
-        self._notifier = notifier
-        self._data_dir = None
-        self._max_level = None
-        self._start = None
-        self._resolution = None
+    def __init__(self):
+        BaseChecker.__init__(self)
+        self.max_level = None
+        self.start = None
+        self.resolution = None
         return
 
-    def configure(self, data_dir, opts):
-        self._data_dir = data_dir
-        self._max_level = int(opts.get('usage_level')) # units?? 
-        self._start = '-%ds' % (int(opts.get('interval', 1200)))
-        self._resolution = '%d' % (int(opts.get('resolution', 120)))
+    def setup(self, collection_dir, logger, opts):
+        BaseChecker.setup(self, collection_dir, logger, opts)
+        self.max_level = int(opts.get('usage_level')) # units?? 
+        self.start = '-%ds' % (int(opts.get('interval', 1200)))
+        self.resolution = '%d' % (int(opts.get('resolution', 120)))
         return
     
     def check(self, hostname):
-        data_dir = os.path.join(self._data_dir, hostname)
-        
-        max_u = self._max_level
-        notifier = self._notifier
+        log1 = self.get_logger(hostname)
+        data_dir = self.data_dir(hostname)
+
+        max_u = self.max_level
         
         # Todo
 
@@ -50,6 +46,6 @@ class Checker(object):
     def get_usage(self, data_dir):
         rrd_file = os.path.join(data_dir, 'load/load.rrd')
         stats = Stats(rrd_file)
-        return stats.avg('midterm', self._start, self._resolution)
+        return stats.avg('midterm', self.start, self.resolution)
     
 

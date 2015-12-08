@@ -8,8 +8,7 @@ config = {}
 template_dirs = []
 template_loader = genshi.template.TemplateLoader()
 
-from .lib.class_loader import load_class
-from .lib.checkers import named_checker
+from .class_loader import load_class
 
 def config_from_file(config_file):
     global config
@@ -20,10 +19,10 @@ def config_from_file(config_file):
 
     here = os.path.abspath('.')
 
-    confp = ConfigParser(defaults = {'here': here})
+    confp = ConfigParser(defaults={'here': here})
     confp.read(config_file)
     
-    for sec in ('stats', 'checkers', 'alerts', 'notifier', 'mailer'):
+    for sec in ('stats', 'checkers', 'alerts', 'mailer'):
         config[sec] = dict(confp.items(sec))
 
     # Setup template loader
@@ -42,5 +41,7 @@ def config_from_file(config_file):
     return
 
 def _load_checker(name, cls_name):
+    from alerts.lib.checkers import named_checker
+    
     cls = load_class(cls_name)
     return named_checker(name)(cls)

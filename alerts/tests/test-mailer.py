@@ -12,7 +12,7 @@ if __name__ == '__main__':
 
     m = make_mailer(config['mailer'])
     headers = {
-        'Subject': 'Yet Another Test!',
+        'Subject': 'Testing alerts.lib.mailer!',
     }
 
     t1 = template_loader.load('hello.html')

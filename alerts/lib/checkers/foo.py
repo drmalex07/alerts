@@ -1,28 +1,20 @@
 import logging
 import zope.interface
 
-from alerts.lib.interfaces import IChecker, INotifier
+from alerts.lib.checkers import IChecker, BaseChecker
 
-class Checker(object):
-    
-    zope.interface.implements(IChecker)
+class Checker(BaseChecker):
 
-    def __init__(self, notifier):
-        self._log = logging.getLogger(__name__)
-        self._notifier = notifier
-        self._data_dir = None
-        self._opts = None
-        self._log.info('Created instance')
-        pass
+    def __init__(self):
+        BaseChecker.__init__(self)
+        self.opts = None
 
-    def configure(self, data_dir, opts):
-        self._data_dir = data_dir
-        self._opts = opts.copy()
-        self._log.info(
-            'Configured instance with: data_dir=%s opts=%r' % (data_dir, opts))
-        pass
+    def setup(self, collection_dir, logger, opts):
+        BaseChecker.setup(self, collection_dir, logger, opts)
+        self.opts = opts.copy()
     
     def check(self, hostname):
-        self._log.info('Checking host: %s', hostname)
-        pass
+        log1 = self.get_logger(hostname)
+        data_dir = self.data_dir(hostname)
+        log1.info('Checking foo (data_dir is %s)', data_dir)
 

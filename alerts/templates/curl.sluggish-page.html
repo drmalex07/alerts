@@ -1,16 +1,15 @@
-<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:py="http://genshi.edgewall.org/">
-    
+  
   <py:match path="body/div[@id='report']" once="true" >
-  <div id="report">  
+  <div id="report">
     <div class="header">
-      <h4>Running out of inodes at <em>${hostname}</em></h4>
+      <h4>The page <em>${page_name}</em> takes too long to respond</h4>
     </div> 
     <div class="message">
-      <p>The filesystem resources at <code>${fs_name}</code> are exhausting: exceeded the usage limit of ${max_usage}%. The average usage was ${avg_usage}%. </p>
+      <p>The page <em>${page_name}</em> takes more than ${max_response_time} to respond. The average response time was ${avg_response_time}.</p>
     </div>
   </div>
   </py:match>
-    
+
   <xi:include href="base.html" />
 </html>

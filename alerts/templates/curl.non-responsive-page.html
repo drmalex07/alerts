@@ -1,17 +1,19 @@
-<!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:py="http://genshi.edgewall.org/">
   
   <py:match path="body/div[@id='report']" once="true" >
   <div id="report">
     <div class="header">
-      <h4>${title}</h4>
-    </div>
+      <h4>The page <em>${page_name}</em> is not responsive</h4>
+    </div> 
     <div class="message">
-      <p>${message}</p>
+      <p>The <tt>curl</tt> checker failed to compute an average on CDPs because of insufficient RRD data.
+      The monitored page <em>${page_name}</em> seems unresponsive.</p>
+    </div>
+    <div class="exc-message">
+        <tt>${exc_message}</tt>
     </div>
   </div>
   </py:match>
-  
+
   <xi:include href="base.html" />
-  
 </html>

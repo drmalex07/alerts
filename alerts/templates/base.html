@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:py="http://genshi.edgewall.org/" py:strip="">
+  <head>
+    <style>
+      #footer-separator { margin: 1.5em 0em }
+    </style>
+  </head>
+
+  <body>
+    
+    <div id="report"></div>
+
+    <p id="footer-separator"> -- </p>
+    <div id="footer">
+      <p py:if="defined('generated_at')">The report was generated at ${generated_at.isoformat()}</p>
+    </div>
+  </body>
+</html>  
+

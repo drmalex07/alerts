@@ -1,7 +1,9 @@
+import os
 import logging
 import zope.interface
 import zope.schema
 from zope.schema import getValidationErrors
+from socket import getfqdn
 
 from alerts import config
 from .interfaces import ICheckContext
@@ -35,7 +37,14 @@ class MailHandler(logging.Handler):
     
     def emit(self, record):
         msg = record.msg
+        try:
+            # A structured message ?
+            title, body = msg.title, msg.body
+        except AttributeError:
+            # A string-like message
+            title = u'%s: Checking %s' % (record.levelname.lower(), record.check_host)
+            body = record.getMessage()
         headers = {
-            'Subject': unicode(msg.title),
+            'Subject': unicode(title),
         }
-        self.mailer.send(self.recipients, headers, msg.body)
+        self.mailer.send(self.recipients, headers, body)

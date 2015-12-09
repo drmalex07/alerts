@@ -73,3 +73,4 @@ class BaseChecker(object):
 from . import cpu
 from . import memory
 from . import df
+from . import curl

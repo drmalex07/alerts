@@ -8,6 +8,7 @@ from collections import namedtuple
 from alerts import template_loader
 from alerts.lib import Message
 from alerts.lib.collected_stats import Stats as BaseStats
+from alerts.lib.collected_stats import NoData, NotEnoughData
 from alerts.lib.checkers import BaseChecker, named_checker
 
 class Stats(BaseStats):
@@ -33,7 +34,10 @@ class Checker(BaseChecker):
         self.resolution = None
         return
 
+    ## IChecker interface ##
+    
     def setup(self, collection_dir, logger, opts):
+        
         BaseChecker.setup(self, collection_dir, logger, opts)
         self.max_level = int(opts.get('usage_level', 90)) # percentage
         self.start = '-%ds' % (int(opts.get('interval', 600)))
@@ -41,12 +45,26 @@ class Checker(BaseChecker):
         return
     
     def check(self, hostname):
+        
         log1 = self.get_logger(hostname)
         data_dir = self.data_dir(hostname)
         
-        max_u = self.max_level
+        try:
+            uv = self.get_usage(data_dir)
+        except NotEnoughData as ex:
+            tpl = template_loader.load('not-enough-data.html')
+            msg_body = tpl.generate(
+                hostname = hostname,
+                exc_message = str(ex),
+                generated_at = datetime.datetime.now())
+            msg = Message(
+                title = u'Not enough data for memory usage at %s' % (hostname),
+                summary = u'Not enough data for memory: Skipping',
+                body = msg_body.render('html'))
+            log1.warn(msg)
+            return # skip checks
 
-        uv = self.get_usage(data_dir)
+        max_u = self.max_level
         u = uv.as_percentage()
         log1.debug(
             'Computed memory usage: %.1f%% (%.1fMiB used, %.1fMiB free, %.1fMiB cached)', 
@@ -71,6 +89,8 @@ class Checker(BaseChecker):
             log1.info(msg)
         return
         
+    ## Helpers ##
+    
     def get_usage(self, data_dir):
         
         stats = Stats(os.path.join(data_dir, 'memory/memory-free.rrd'))

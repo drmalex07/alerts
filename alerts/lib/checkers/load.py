@@ -26,7 +26,10 @@ class Checker(BaseChecker):
         self.resolution = None
         return
 
+    ## IChecker interface ##
+    
     def setup(self, collection_dir, logger, opts):
+        
         BaseChecker.setup(self, collection_dir, logger, opts)
         self.max_level = int(opts.get('usage_level')) # units?? 
         self.start = '-%ds' % (int(opts.get('interval', 1200)))
@@ -34,6 +37,7 @@ class Checker(BaseChecker):
         return
     
     def check(self, hostname):
+        
         log1 = self.get_logger(hostname)
         data_dir = self.data_dir(hostname)
 
@@ -43,6 +47,8 @@ class Checker(BaseChecker):
 
         return
         
+    ## Helpers ##
+    
     def get_usage(self, data_dir):
         rrd_file = os.path.join(data_dir, 'load/load.rrd')
         stats = Stats(rrd_file)

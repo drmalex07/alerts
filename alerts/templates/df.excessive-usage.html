@@ -1,18 +1,16 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:py="http://genshi.edgewall.org/">
-  <head>
-  </head>
-  <body>
-    <div id="header">
-      <h4>Running out of space at <em>${hostname}</em></h4>
-    </div>
-     
-    <div id="message">
-        <p>The filesystem resources on <code>${fs_name}</code> are exhausting: exceeded the usage limit of ${max_usage}%. The average usage was ${avg_usage}%. </p>
-    </div>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:xi="http://www.w3.org/2001/XInclude" xmlns:py="http://genshi.edgewall.org/">
     
-    <div py:if="defined('generated_at')" id="footer">
-        <p><small>Report generated at ${generated_at.isoformat()}</small></p>
+  <py:match path="body/div[@id='report']" once="true" >
+  <div id="report">  
+    <div class="header">
+      <h4>Running out of space at <em>${hostname}</em></h4>
+    </div> 
+    <div class="message">
+      <p>The filesystem resources on <code>${fs_name}</code> are exhausting: exceeded the usage limit of ${max_usage}%. The average usage was ${avg_usage}%. </p>
     </div>
-  </body>
+  </div>  
+  </py:match>
+    
+  <xi:include href="base.html" />
 </html>
